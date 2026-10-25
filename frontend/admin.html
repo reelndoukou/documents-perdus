@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Administration | Documents Perdus</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div id="toasts"></div>
+
+<!-- ============ CONNEXION ============ -->
+<section id="vue-login" class="login-wrap">
+  <form id="form-login" class="carte login-carte" novalidate>
+    <h1>Administration</h1>
+    <p class="sous-titre">Accès réservé à l'équipe Documents Perdus</p>
+    <label for="log-email">E-mail</label>
+    <input type="email" id="log-email" autocomplete="username" required>
+    <label for="log-mdp">Mot de passe</label>
+    <input type="password" id="log-mdp" autocomplete="current-password" required>
+    <button type="submit" class="gros" id="btn-login">Se connecter</button>
+  </form>
+</section>
+
+<!-- ============ ESPACE ÉQUIPE ============ -->
+<section id="vue-admin" style="display:none">
+  <header>
+    <div class="header-inner">
+      <span class="logo">Documents<span>Perdus</span> · Équipe</span>
+      <nav id="nav-admin">
+        <a href="#" data-onglet="dashboard" class="actif">Tableau de bord</a>
+        <a href="#" data-onglet="declarations">Déclarations</a>
+        <a href="#" data-onglet="signalements">Signalements<span class="pastille" id="pastille-sign" style="display:none"></span></a>
+        <a href="#" data-onglet="alertes">Alertes<span class="pastille" id="pastille-alertes" style="display:none"></span></a>
+        <a href="#" data-onglet="paiements">Paiements</a>
+      </nav>
+      <div class="compte"><span id="admin-email"></span> <button class="petit neutre" id="btn-logout" type="button">Déconnexion</button></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Tableau de bord -->
+    <div class="onglet visible" id="onglet-dashboard">
+      <h1>Tableau de bord</h1>
+      <p class="sous-titre">Revenus et activité de la plateforme</p>
+      <div id="dash-contenu"><p class="vide">Chargement...</p></div>
+    </div>
+
+    <!-- Déclarations -->
+    <div class="onglet" id="onglet-declarations">
+      <h1>Toutes les déclarations</h1>
+      <p class="sous-titre">Cliquez sur « Détails » pour voir la fiche complète avec les coordonnées.</p>
+      <div class="carte">
+        <div class="barre-outils">
+          <input type="text" id="decl-recherche" placeholder="Nom, déclarant, téléphone, ville...">
+          <select id="decl-filtre">
+            <option value="">Tous les statuts</option>
+            <option value="en_attente">En attente</option>
+            <option value="publie">Publiées</option>
+            <option value="restitue">Restituées</option>
+            <option value="rejete">Rejetées</option>
+          </select>
+        </div>
+        <div class="table-wrap"><div id="decl-liste"></div></div>
+        <div class="pagination" id="decl-pagination"></div>
+      </div>
+    </div>
+
+    <!-- Signalements -->
+    <div class="onglet" id="onglet-signalements">
+      <h1>Signalements</h1>
+      <p class="sous-titre">Propriétaires ayant signalé un problème après avoir payé.</p>
+      <div class="carte"><div class="table-wrap"><div id="sign-liste"></div></div></div>
+    </div>
+
+    <!-- Alertes -->
+    <div class="onglet" id="onglet-alertes">
+      <h1>Alertes payantes</h1>
+      <p class="sous-titre">Personnes à prévenir par mail et par appel dès que leur document est retrouvé.</p>
+      <div class="carte">
+        <div class="barre-outils">
+          <select id="alerte-filtre">
+            <option value="active">À traiter</option>
+            <option value="notifiee">Déjà prévenues</option>
+            <option value="">Toutes</option>
+          </select>
+        </div>
+        <div id="alertes-liste"></div>
+      </div>
+    </div>
+
+    <!-- Paiements -->
+    <div class="onglet" id="onglet-paiements">
+      <h1>Paiements</h1>
+      <p class="sous-titre">Historique de tous les encaissements.</p>
+      <div class="carte">
+        <div class="barre-outils">
+          <select id="pay-filtre">
+            <option value="">Tous les types</option>
+            <option value="deblocage">Déblocages</option>
+            <option value="alerte">Alertes</option>
+          </select>
+        </div>
+        <div class="table-wrap"><div id="pay-liste"></div></div>
+        <div class="pagination" id="pay-pagination"></div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<!-- ============ FICHE DÉTAIL ============ -->
+<div class="modal-fond" id="modal-detail">
+  <div class="modal large">
+    <div class="modal-entete">
+      <h2 id="detail-titre">Détails</h2>
+      <button class="petit neutre" id="detail-fermer" type="button">Fermer</button>
+    </div>
+    <div id="detail-contenu"></div>
+  </div>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documents Perdus : perdu ? trouvé ? retrouvons-le ensemble</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="toasts"></div>
+
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo" data-page="accueil">Documents<span>Perdus</span></a>
+    <nav>
+      <a href="#" data-page="accueil" class="actif">Accueil</a>
+      <a href="#" data-page="declarer">J'ai trouvé un document</a>
+      <a href="#" data-page="rechercher">J'ai perdu un document</a>
+      <a href="#" data-page="acces">Mes accès</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ ACCUEIL ============ -->
+  <section id="page-accueil" class="page visible">
+    <div class="hero">
+      <h1>Perdu ? Trouvé ? <span>Retrouvons-le ensemble.</span></h1>
+      <p>Passeport, carte d'identité, permis, livret... Déclarez un document trouvé gratuitement, ou retrouvez le vôtre en quelques clics.</p>
+      <div class="hero-boutons">
+        <button class="gros" data-page="rechercher">J'ai perdu un document</button>
+        <button class="gros secondaire" data-page="declarer">J'ai trouvé un document</button>
+      </div>
+    </div>
+
+    <div class="etapes">
+      <div class="etape"><div class="num">1</div><h3>Déclaration gratuite</h3><p>Une personne trouve un document et le déclare avec deux photos. C'est gratuit.</p></div>
+      <div class="etape"><div class="num">2</div><h3>Recherche et vérification</h3><p>Le propriétaire cherche avec son nom, le type de document et la ville, puis vérifie sur les photos que c'est bien le sien.</p></div>
+      <div class="etape"><div class="num">3</div><h3>Mise en relation</h3><p>Après un paiement unique, il obtient les coordonnées pour fixer un rendez-vous dans un lieu public.</p></div>
+    </div>
+
+    <div class="carte attention">
+      <h2>Votre sécurité avant tout</h2>
+      <p>Donnez-vous toujours rendez-vous dans un <strong>lieu public, à la vue de tous</strong>. Le propriétaire vérifie le document avant de le récupérer, puis verse en main propre une indemnité de déplacement. Celui qui a trouvé le document vérifie de son côté l'identité du propriétaire.</p>
+    </div>
+  </section>
+
+  <!-- ============ DÉCLARER UN DOCUMENT TROUVÉ ============ -->
+  <section id="page-declarer" class="page">
+    <h1>J'ai trouvé un document</h1>
+    <p class="sous-titre">La déclaration est <strong>gratuite</strong>. Merci de rendre service !</p>
+
+    <form id="form-declaration" class="carte" novalidate>
+      <h2>Le document</h2>
+      <div class="grille">
+        <div>
+          <label for="decl-type">Type de document *</label>
+          <select id="decl-type" required></select>
+        </div>
+        <div>
+          <label for="decl-nom">Nom et prénoms complets figurant sur le document *</label>
+          <input type="text" id="decl-nom" placeholder="Ex : Jean Paul MBEKI" required>
+        </div>
+        <div>
+          <label for="decl-ville">Ville où le document a été trouvé *</label>
+          <input type="text" id="decl-ville" placeholder="Ex : Brazzaville" required>
+        </div>
+      </div>
+
+      <h2>Deux photos du document</h2>
+      <p class="aide">Elles permettent au propriétaire de reconnaître son document. <strong>Masquez le numéro du document</strong> (avec le doigt ou un papier) avant de photographier. Les photos sont réduites automatiquement avant l'envoi.</p>
+      <div class="grille">
+        <div><label for="photo1">Photo 1 (recto) *</label><input type="file" id="photo1" accept="image/jpeg,image/png,image/webp" required></div>
+        <div><label for="photo2">Photo 2 (verso ou autre angle) *</label><input type="file" id="photo2" accept="image/jpeg,image/png,image/webp" required></div>
+      </div>
+
+      <h2>Où est le document ?</h2>
+      <div class="choix">
+        <label class="radio"><input type="radio" name="mode" value="garde" checked> Je garde le document sur moi</label>
+        <label class="radio"><input type="radio" name="mode" value="depose"> Je l'ai déposé dans un établissement public</label>
+      </div>
+
+      <div id="bloc-depose" style="display:none">
+        <label for="decl-lieu">Où l'avez-vous déposé ? Décrivez le lieu avec précision *</label>
+        <textarea id="decl-lieu" rows="3" placeholder="Ex : Réception de l'hôtel Atlantic, avenue de Gaulle, en face de la poste centrale"></textarea>
+        <label class="radio"><input type="checkbox" id="decl-anonyme"> Rester anonyme (je ne renseigne aucune coordonnée)</label>
+      </div>
+
+      <div id="bloc-coordonnees">
+        <h2>Vos coordonnées</h2>
+        <p class="aide">Elles restent <strong>cachées</strong> et ne sont communiquées au propriétaire qu'après son paiement.</p>
+        <div class="grille">
+          <div><label for="decl-dnom">Votre nom *</label><input type="text" id="decl-dnom"></div>
+          <div><label for="decl-dtel">Votre téléphone *</label><input type="tel" id="decl-dtel" placeholder="06 000 00 00"></div>
+          <div><label for="decl-dmail">Votre e-mail</label><input type="email" id="decl-dmail"></div>
+          <div><label for="decl-dville">Votre ville</label><input type="text" id="decl-dville"></div>
+          <div><label for="decl-dquartier">Votre quartier</label><input type="text" id="decl-dquartier"></div>
+        </div>
+      </div>
+
+      <button type="submit" id="btn-declarer" class="gros">Déclarer le document</button>
+    </form>
+  </section>
+
+  <!-- ============ RECHERCHER SON DOCUMENT ============ -->
+  <section id="page-rechercher" class="page">
+    <h1>J'ai perdu un document</h1>
+    <p class="sous-titre">Renseignez les informations exactes figurant sur votre document.</p>
+
+    <form id="form-recherche" class="carte" novalidate>
+      <div class="grille">
+        <div><label for="rech-nom">Nom et prénoms complets *</label><input type="text" id="rech-nom" placeholder="Ex : Jean Paul MBEKI" required></div>
+        <div><label for="rech-type">Type de document *</label><select id="rech-type" required></select></div>
+        <div><label for="rech-ville">Ville *</label><input type="text" id="rech-ville" placeholder="Ex : Brazzaville" required></div>
+      </div>
+      <button type="submit" class="gros">Rechercher</button>
+    </form>
+
+    <div id="resultats"></div>
+  </section>
+
+  <!-- ============ MES ACCÈS ============ -->
+  <section id="page-acces" class="page">
+    <h1>Mes accès</h1>
+    <p class="sous-titre">Retrouvez les coordonnées que vous avez débloquées.</p>
+
+    <div class="carte">
+      <h2>Utiliser un code d'accès</h2>
+      <form id="form-acces" class="ligne-form" novalidate>
+        <input type="text" id="acces-token" placeholder="Collez votre code d'accès">
+        <button type="submit">Consulter</button>
+      </form>
+    </div>
+
+    <div class="carte" id="liste-acces-carte">
+      <h2>Sur cet appareil</h2>
+      <div id="liste-acces"></div>
+    </div>
+
+    <div id="zone-acces"></div>
+  </section>
+
+</main>
+
+<!-- ============ MODALE DE PAIEMENT ============ -->
+<div class="modal-fond" id="modal-paiement">
+  <div class="modal">
+    <div class="modal-entete">
+      <h2>Contacter la personne</h2>
+      <button class="secondaire petit" id="modal-fermer" type="button">Fermer</button>
+    </div>
+    <p id="paiement-resume" class="aide"></p>
+    <div class="bandeau-simulation">Mode simulation : aucun argent réel n'est prélevé.</div>
+    <form id="form-paiement" novalidate>
+      <label for="pay-nom">Votre nom *</label>
+      <input type="text" id="pay-nom" required>
+      <label for="pay-tel">Votre numéro Mobile Money *</label>
+      <input type="tel" id="pay-tel" placeholder="06 000 00 00" required>
+      <label for="pay-operateur">Opérateur</label>
+      <select id="pay-operateur"><option>MTN Mobile Money</option><option>Airtel Money</option></select>
+      <p class="aide">En plus de cette commission, vous remettrez en main propre une indemnité de déplacement au déclarant (minimum conseillé : <span id="pay-indemnite"></span>), <strong>après avoir vérifié et récupéré votre document</strong>.</p>
+      <button type="submit" id="btn-payer" class="gros">Payer</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
