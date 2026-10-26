@@ -1,4 +1,6 @@
 const pool = require('../config/db');
+const crypto = require('crypto');
+const monetbil = require('../services/monetbil');
 
 const AVERTISSEMENT =
   "Donnez-vous rendez-vous dans un lieu public, à la vue de tous. " +
@@ -26,6 +28,26 @@ function infosRevelees(d) {
 // notification de MonetBil le passera à "reussi". La lecture (consulter) ne
 // change pas, car elle exige déjà un paiement "reussi".
 exports.debloquer = async (req, res, next) => {
+  // Vrai paiement MonetBil : on crée le paiement en attente et on renvoie le lien
+  if (monetbil.actif()) {
+    try {
+      const nom = req.body.proprietaire_nom.trim();
+      const tel = req.body.proprietaire_telephone.trim();
+
+      const decl = await pool.query("SELECT id FROM declarations WHERE id = $1 AND statut = 'publie'", [req.params.id]);
+      if (decl.rows.length === 0) return res.status(404).json({ erreur: 'Document introuvable ou plus disponible' });
+
+      const param = await pool.query("SELECT valeur FROM parametres WHERE cle = 'commission_deblocage'");
+      const { reference, payment_url } = await monetbil.creerPaiement({
+        type: 'deblocage',
+        montant: parseInt(param.rows[0].valeur),
+        telephone: tel,
+        donnees: { declaration_id: decl.rows[0].id, proprietaire_nom: nom, proprietaire_telephone: tel, token: crypto.randomUUID() },
+      });
+      return res.status(201).json({ payment_url, reference });
+    } catch (err) { return next(err); }
+  }
+
   if (process.env.PAIEMENT_SIMULE !== 'true') {
     return res.status(501).json({ erreur: "Le paiement en ligne n'est pas encore activé" });
   }

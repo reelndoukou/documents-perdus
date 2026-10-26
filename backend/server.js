@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 
 // Photos envoyées + frontend (même serveur, même port)
@@ -33,13 +34,17 @@ app.get('/api/parametres', async (req, res, next) => {
       `SELECT cle, valeur FROM parametres
        WHERE cle IN ('commission_deblocage','prix_alerte','indemnite_conseillee_min','delai_reessai_heures')`
     );
-    res.json(Object.fromEntries(r.rows.map((x) => [x.cle, parseInt(x.valeur)])));
+      res.json({
+      ...Object.fromEntries(r.rows.map((x) => [x.cle, parseInt(x.valeur)])),
+      mode_paiement: process.env.MONETBIL_ACTIF === 'true' ? 'monetbil' : 'simule',
+    });
   } catch (err) { next(err); }
 });
 
 app.use('/api/declarations', require('./routes/declarationsRoutes'));
 app.use('/api/deblocages', require('./routes/deblocagesRoutes'));
 app.use('/api/alertes', require('./routes/alertesRoutes'));
+app.use('/api/monetbil', require('./routes/monetbilRoutes'));
 
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use(notFound);
