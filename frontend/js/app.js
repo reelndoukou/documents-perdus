@@ -210,8 +210,7 @@ function afficherNonTrouve(res) {
     <form id="form-alerte" class="carte" novalidate>
       <h2>Être prévenu dès que votre document est retrouvé</h2>
       <p class="aide">Notre équipe vous prévient par e-mail et par appel. Prix : <strong>${fcfa(res.alerte.prix)}</strong>, payable via Mobile Money.</p>
-      <div class="bandeau-simulation">Mode simulation : aucun argent réel n'est prélevé.</div>
-      <div class="grille">
+      ${etat.reel ? '' : '<div class="bandeau-simulation">Mode simulation : aucun argent réel n\'est prélevé.</div>'}      <div class="grille">
         <div><label>Nom sur le document</label><input type="text" id="al-nom" value="${echapper(r.nom)}" required></div>
         <div><label>Votre téléphone *</label><input type="tel" id="al-tel" placeholder="06 000 00 00" required></div>
         <div><label>Votre e-mail</label><input type="email" id="al-mail"></div>
@@ -231,6 +230,11 @@ function afficherNonTrouve(res) {
         telephone: document.getElementById('al-tel').value,
         email: document.getElementById('al-mail').value,
       });
+      if (rep.payment_url) {
+        memoriserEnAttente(rep.reference);
+        window.location.href = rep.payment_url;
+        return;
+      }
       zoneResultats.innerHTML = `<div class="message ok">${echapper(rep.message)}</div>`;
       toast('Alerte activée');
     } catch (err) {
@@ -277,6 +281,12 @@ document.getElementById('form-paiement').addEventListener('submit', async (e) =>
       proprietaire_nom: nom,
       proprietaire_telephone: document.getElementById('pay-tel').value,
     });
+      // Vrai paiement : on envoie la personne sur la page MonetBil
+    if (rep.payment_url) {
+      memoriserEnAttente(rep.reference);
+      window.location.href = rep.payment_url;
+      return;
+    }
     ajouterAcces(rep.token, nom);
     fermerPaiement();
     e.target.reset();
@@ -400,6 +410,8 @@ async function init() {
   try {
     const [types, params] = await Promise.all([appel('/types-document'), appel('/parametres')]);
     Object.assign(etat.prix, params);
+    etat.reel = params.mode_paiement === 'monetbil';
+    document.querySelectorAll('.bandeau-simulation').forEach((b) => { b.style.display = etat.reel ? 'none' : 'block'; });
     const options = types.map((t) => `<option value="${t.id}">${echapper(t.libelle)}</option>`).join('');
     document.getElementById('decl-type').innerHTML = options;
     document.getElementById('rech-type').innerHTML = options;
@@ -407,6 +419,84 @@ async function init() {
     toast('Impossible de charger les données : ' + err.message, 'erreur');
   }
   majFormDeclaration();
+  traiterRetourPaiement();
 }
 
+// ============ RETOUR DE PAIEMENT MONETBIL ============
+
+const CLE_ATTENTE = 'dp_attente';
+
+function lireEnAttente() {
+  try { return JSON.parse(localStorage.getItem(CLE_ATTENTE)) || []; } catch { return []; }
+}
+function ecrireEnAttente(liste) {
+  try { localStorage.setItem(CLE_ATTENTE, JSON.stringify(liste)); } catch { /* stockage indisponible */ }
+}
+function memoriserEnAttente(ref) {
+  const liste = lireEnAttente().filter((x) => x.ref !== ref);
+  liste.unshift({ ref, date: Date.now() });
+  ecrireEnAttente(liste.slice(0, 10));
+}
+function retirerEnAttente(ref) {
+  ecrireEnAttente(lireEnAttente().filter((x) => x.ref !== ref));
+}
+
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// MonetBil confirme le paiement par notification : on interroge notre serveur jusqu'à la réponse
+async function attendrePaiement(ref, essais = 40) {
+  for (let i = 0; i < essais; i++) {
+    const s = await appel(`/monetbil/statut/${encodeURIComponent(ref)}`);
+    if (s.statut !== 'en_attente') return s;
+    await pause(3000);
+  }
+  return { statut: 'en_attente' };
+}
+
+async function conclurePaiement(ref, s) {
+  if (s.statut === 'en_attente') return;
+  retirerEnAttente(ref);
+  afficherPage('rechercher');
+
+  if (s.statut === 'reussi' && s.type === 'deblocage') {
+    const d = await appel(`/deblocages/${encodeURIComponent(s.token)}`);
+    ajouterAcces(s.token, s.nom);
+    zoneResultats.innerHTML = htmlReveal(d, s.token, true);
+    toast('Paiement confirmé');
+  } else if (s.statut === 'reussi') {
+    zoneResultats.innerHTML = '<div class="message ok">Alerte activée. Notre équipe vous préviendra par mail et par appel dès que votre document sera retrouvé.</div>';
+    toast('Paiement confirmé');
+  } else {
+    zoneResultats.innerHTML = '<div class="message erreur">Le paiement n\'a pas abouti. Si une somme a été débitée, contactez-nous avec votre numéro de téléphone. Vous pouvez aussi réessayer.</div>';
+  }
+}
+
+async function traiterRetourPaiement() {
+  const ref = new URLSearchParams(location.search).get('paiement');
+
+  if (ref) {
+    history.replaceState(null, '', location.pathname);
+    afficherPage('rechercher');
+    zoneResultats.innerHTML = '<div class="message info">Confirmation de votre paiement en cours... ne fermez pas cette page.</div>';
+    try {
+      const s = await attendrePaiement(ref);
+      if (s.statut === 'en_attente') {
+        memoriserEnAttente(ref);
+        zoneResultats.innerHTML = '<div class="message info">Votre paiement n\'est pas encore confirmé. Revenez sur le site dans quelques minutes : vos accès apparaîtront automatiquement dès la confirmation.</div>';
+      } else {
+        await conclurePaiement(ref, s);
+      }
+    } catch (err) { toast(err.message, 'erreur'); }
+    return;
+  }
+
+  // Paiements démarrés mais jamais conclus (page fermée, réseau coupé...)
+  for (const { ref: r, date } of lireEnAttente()) {
+    if (Date.now() - date > 24 * 3600 * 1000) { retirerEnAttente(r); continue; }
+    try {
+      const s = await appel(`/monetbil/statut/${encodeURIComponent(r)}`);
+      if (s.statut !== 'en_attente') await conclurePaiement(r, s);
+    } catch { /* on réessaiera à la prochaine visite */ }
+  }
+}
 init();
