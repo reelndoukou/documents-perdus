@@ -38,7 +38,7 @@ exports.debloquer = async (req, res, next) => {
       if (decl.rows.length === 0) return res.status(404).json({ erreur: 'Document introuvable ou plus disponible' });
 
       const param = await pool.query("SELECT valeur FROM parametres WHERE cle = 'commission_deblocage'");
-      const { reference, payment_url } = await monetbil.creerPaiement({
+      const { reference, payment_url } = await sebpay.creerPaiement({
         type: 'deblocage',
         montant: parseInt(param.rows[0].valeur),
         telephone: tel,

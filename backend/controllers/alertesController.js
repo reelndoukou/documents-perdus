@@ -13,7 +13,7 @@ exports.creerAlerte = async (req, res, next) => {
 
       const param = await pool.query("SELECT valeur FROM parametres WHERE cle = 'prix_alerte'");
       const email = b.email && b.email.trim() ? b.email.trim() : null;
-      const { reference, payment_url } = await monetbil.creerPaiement({
+      const { reference, payment_url } = await sebpay.creerPaiement({
         type: 'alerte',
         montant: parseInt(param.rows[0].valeur),
         telephone: b.telephone.trim(),
