@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 const crypto = require('crypto');
-const monetbil = require('../services/sebpay');
+const sebpay = require('../services/sebpay');
 
 const AVERTISSEMENT =
   "Donnez-vous rendez-vous dans un lieu public, à la vue de tous. " +

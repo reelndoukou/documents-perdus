@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 const { normaliserNom } = require('../utils/normaliser');
-const monetbil = require('../services/sebpay');
+const sebpay = require('../services/sebpay');
 
 // POST /api/alertes : « Prévenez-moi quand mon document sera retrouvé »
 // Paiement SIMULÉ (même principe que le déblocage : MonetBil viendra remplacer cette partie)
