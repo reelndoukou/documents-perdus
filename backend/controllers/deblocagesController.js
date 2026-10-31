@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 const crypto = require('crypto');
-const monetbil = require('../services/monetbil');
+const monetbil = require('../services/sebpay');
 
 const AVERTISSEMENT =
   "Donnez-vous rendez-vous dans un lieu public, à la vue de tous. " +
@@ -29,7 +29,7 @@ function infosRevelees(d) {
 // change pas, car elle exige déjà un paiement "reussi".
 exports.debloquer = async (req, res, next) => {
   // Vrai paiement MonetBil : on crée le paiement en attente et on renvoie le lien
-  if (monetbil.actif()) {
+  if (sebpay.actif()) {
     try {
       const nom = req.body.proprietaire_nom.trim();
       const tel = req.body.proprietaire_telephone.trim();

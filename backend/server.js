@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const pool = require('./config/db');
+const sebpay = require('./services/sebpay');
 
 const logger = require('./middlewares/logger');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
@@ -12,7 +13,8 @@ app.set('trust proxy', 1);
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
-app.use(express.json());
+// On garde le corps brut : Sebpay signe les octets exacts du webhook (HMAC-SHA256)
+app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 
@@ -36,7 +38,7 @@ app.get('/api/parametres', async (req, res, next) => {
     );
       res.json({
       ...Object.fromEntries(r.rows.map((x) => [x.cle, parseInt(x.valeur)])),
-      mode_paiement: process.env.MONETBIL_ACTIF === 'true' ? 'monetbil' : 'simule',
+      mode_paiement: sebpay.actif() ? 'sebpay' : 'simule',
     });
   } catch (err) { next(err); }
 });
@@ -44,7 +46,11 @@ app.get('/api/parametres', async (req, res, next) => {
 app.use('/api/declarations', require('./routes/declarationsRoutes'));
 app.use('/api/deblocages', require('./routes/deblocagesRoutes'));
 app.use('/api/alertes', require('./routes/alertesRoutes'));
-app.use('/api/monetbil', require('./routes/monetbilRoutes'));
+const sebpayRoutes = require('./routes/sebpayRoutes');
+app.use('/api/sebpay', sebpayRoutes);
+// Alias temporaire : l'ancien front appelle encore /api/monetbil/statut/:ref.
+// À supprimer une fois le front passé sur /api/sebpay.
+app.use('/api/monetbil', sebpayRoutes);
 
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use(notFound);
