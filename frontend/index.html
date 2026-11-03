@@ -5,8 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Documents Perdus : perdu ? trouvé ? retrouvons-le ensemble</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f5c4d">
+<meta name="description" content="Perdu ? Trouvé ? Retrouvons-le ensemble. Déclarez un document trouvé ou retrouvez le vôtre.">
+<link rel="icon" type="image/png" href="images/logo.png">
+<link rel="apple-touch-icon" href="images/logo.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Docs Perdus">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>
+// Écran de démarrage : une fois par session, et jamais au retour d'un paiement
+try { if (sessionStorage.getItem('dp_splash') || /[?&]paiement=/.test(location.search)) document.documentElement.classList.add('splash-skip'); } catch (e) {}
+</script>
+<noscript><style>#splash { display: none; }</style></noscript>
 </head>
 <body>
+
+<!-- Écran de démarrage -->
+<div id="splash" role="status" aria-label="Chargement de Documents Perdus">
+  <div class="splash-contenu">
+    <img class="splash-logo" src="images/logo.png" alt="" width="150" height="150">
+    <div class="splash-nom" aria-hidden="true">
+      <span class="mot"><span style="--i:0">D</span><span style="--i:1">o</span><span style="--i:2">c</span><span style="--i:3">u</span><span style="--i:4">m</span><span style="--i:5">e</span><span style="--i:6">n</span><span style="--i:7">t</span><span style="--i:8">s</span></span><span class="mot accent"><span style="--i:9">P</span><span style="--i:10">e</span><span style="--i:11">r</span><span style="--i:12">d</span><span style="--i:13">u</span><span style="--i:14">s</span></span>
+    </div>
+    <div class="splash-barre" aria-hidden="true"><span></span></div>
+  </div>
+</div>
 
 <div id="toasts"></div>
 
@@ -18,6 +43,7 @@
       <a href="#" data-page="declarer">J'ai trouvé un document</a>
       <a href="#" data-page="rechercher">J'ai perdu un document</a>
       <a href="#" data-page="acces">Mes accès</a>
+      <a href="#" data-page="aide">Aide</a>
     </nav>
   </div>
 </header>
@@ -40,6 +66,8 @@
       <div class="etape"><div class="num">2</div><h3>Recherche et vérification</h3><p>Le propriétaire cherche avec son nom, le type de document et la ville, puis vérifie sur les photos que c'est bien le sien.</p></div>
       <div class="etape"><div class="num">3</div><h3>Mise en relation</h3><p>Après un paiement unique, il obtient les coordonnées pour fixer un rendez-vous dans un lieu public.</p></div>
     </div>
+
+    <p class="aide-accueil">Une question sur le fonctionnement ou sur les frais ? <a href="#" data-page="aide">Consultez le guide d'aide</a>.</p>
 
     <div class="carte attention">
       <h2>Votre sécurité avant tout</h2>
@@ -142,6 +170,190 @@
     <div id="zone-acces"></div>
   </section>
 
+  <!-- ============ AIDE ============ -->
+  <section id="page-aide" class="page">
+    <h1>Aide : comment ça marche</h1>
+    <p class="sous-titre">Un guide pas à pas pour retrouver un document perdu ou rendre un document trouvé, et pour comprendre à quoi servent les frais.</p>
+
+    <div class="sommaire">
+      <a href="#aide-perdu">J'ai perdu un document</a>
+      <a href="#aide-trouve">J'ai trouvé un document</a>
+      <a href="#aide-acces">Mes accès</a>
+      <a href="#aide-frais">Pourquoi des frais ?</a>
+      <a href="#aide-securite">Sécurité</a>
+      <a href="#aide-faq">Questions fréquentes</a>
+      <a href="#aide-contact">Nous contacter</a>
+    </div>
+
+    <!-- ---------- Document perdu ---------- -->
+    <div class="carte" id="aide-perdu">
+      <h2>Vous avez perdu un document</h2>
+      <p class="aide">La recherche est gratuite et vous n'avez pas besoin de créer de compte.</p>
+      <ol class="guide">
+        <li>
+          <h3>Ouvrez « J'ai perdu un document »</h3>
+          <p>Cliquez sur ce bouton dans le menu ou sur la page d'accueil.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> C'est ici que se trouvent toutes les déclarations de personnes qui ont trouvé un document. Chercher ne coûte rien.</p>
+        </li>
+        <li>
+          <h3>Renseignez le nom, le type de document et la ville</h3>
+          <p>Écrivez le nom et les prénoms complets tels qu'ils figurent sur le document, choisissez son type (passeport, carte d'identité, permis…) et indiquez la ville où vous pensez l'avoir perdu.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Ces trois informations permettent de retrouver la bonne déclaration. Les accents, les majuscules et l'ordre des noms n'ont pas d'importance.</p>
+        </li>
+        <li>
+          <h3>Reconnaissez votre document sur les photos</h3>
+          <p>Si une déclaration correspond, vous voyez deux photos du document. Vérifiez que c'est bien le vôtre.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Le numéro du document est masqué et un filigrane est ajouté aux photos pour protéger son propriétaire. Vous seul pouvez reconnaître votre document à son aspect, sa photo ou son état.</p>
+        </li>
+        <li>
+          <h3>Demandez à contacter la personne</h3>
+          <p>Cliquez sur « C'est mon document : contacter ». Une fenêtre s'ouvre : indiquez votre nom et votre numéro de téléphone.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Les coordonnées de la personne qui a trouvé le document restent cachées tant que la commission n'est pas payée. Cela la protège des curieux et des faux propriétaires.</p>
+        </li>
+        <li>
+          <h3>Payez la commission par Mobile Money</h3>
+          <p>Vous êtes redirigé vers la page de paiement sécurisée de notre partenaire <strong>Sebpay</strong>. Choisissez votre pays et votre opérateur, saisissez votre numéro, puis <strong>confirmez sur votre téléphone</strong> avec votre code secret.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Le paiement est un paiement unique pour débloquer ce contact. Avant de payer, vérifiez que votre solde couvre le montant (plus d'éventuels frais de votre opérateur). La page de paiement reste valable 30 minutes : au-delà, recommencez simplement.</p>
+        </li>
+        <li>
+          <h3>Récupérez les coordonnées et gardez votre code d'accès</h3>
+          <p>Après le paiement, vous voyez les coordonnées de la personne et un <strong>code d'accès</strong>. Notez ce code ou gardez-le en lieu sûr.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Ce code vous permet de retrouver ces coordonnées plus tard, depuis la page « Mes accès », sans payer une seconde fois.</p>
+        </li>
+        <li>
+          <h3>Fixez un rendez-vous dans un lieu public</h3>
+          <p>Appelez la personne et donnez-vous rendez-vous dans un lieu public, à la vue de tous. Vérifiez votre document, récupérez-le, puis remettez-lui <strong>en main propre</strong> une indemnité de déplacement (minimum conseillé : <span data-param="indemnite_conseillee_min">affiché dans la fenêtre de paiement</span>).</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Cette indemnité remercie la personne pour son temps et son déplacement. Elle ne se paie qu'après avoir vérifié et récupéré votre document, jamais avant.</p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- ---------- Document trouvé ---------- -->
+    <div class="carte" id="aide-trouve">
+      <h2>Vous avez trouvé un document</h2>
+      <p class="aide">Merci de rendre service ! La déclaration est <strong>entièrement gratuite</strong>.</p>
+      <ol class="guide">
+        <li>
+          <h3>Ouvrez « J'ai trouvé un document »</h3>
+          <p>Choisissez le type de document, recopiez le nom et les prénoms complets figurant dessus, et indiquez la ville où vous l'avez trouvé.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Le propriétaire fera sa recherche avec ces mêmes informations. Plus elles sont exactes, plus il a de chances de vous trouver.</p>
+        </li>
+        <li>
+          <h3>Ajoutez deux photos</h3>
+          <p>Photographiez le recto, puis le verso ou un autre angle. <strong>Masquez le numéro du document</strong> avec le doigt ou un papier avant de prendre la photo.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Les photos permettent au propriétaire de reconnaître son document. Le numéro est une information sensible : personne d'autre que le propriétaire ne doit pouvoir le lire. Les photos sont réduites automatiquement avant l'envoi.</p>
+        </li>
+        <li>
+          <h3>Dites où se trouve le document</h3>
+          <p>Choisissez « Je garde le document sur moi » ou « Je l'ai déposé dans un établissement public ». Dans le second cas, décrivez le lieu avec précision (nom, rue, point de repère).</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Le propriétaire doit savoir comment récupérer son document. Si vous l'avez déposé, vous pouvez même rester anonyme : le lieu suffit.</p>
+        </li>
+        <li>
+          <h3>Renseignez vos coordonnées</h3>
+          <p>Indiquez votre nom et votre téléphone (e-mail, ville et quartier sont facultatifs).</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> Vos coordonnées restent <strong>cachées</strong>. Elles ne sont communiquées qu'au propriétaire, une fois qu'il a payé la commission.</p>
+        </li>
+        <li>
+          <h3>Attendez la publication, puis le contact</h3>
+          <p>Notre équipe vérifie votre déclaration avant de la publier. Quand le propriétaire se manifeste, il vous appelle et vous convenez d'un rendez-vous dans un lieu public.</p>
+          <p class="pourquoi"><strong>Pourquoi ?</strong> La vérification évite les fausses déclarations. Au rendez-vous, vérifiez l'identité de la personne avant de remettre le document. Elle vous remet une indemnité de déplacement en main propre.</p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- ---------- Mes accès ---------- -->
+    <div class="carte" id="aide-acces">
+      <h2>Retrouver vos coordonnées : « Mes accès »</h2>
+      <ul class="liste-aide">
+        <li><strong>Sur le même appareil :</strong> vos accès débloqués apparaissent automatiquement dans la rubrique « Sur cet appareil ».</li>
+        <li><strong>Sur un autre appareil ou après avoir vidé le navigateur :</strong> collez votre code d'accès dans « Utiliser un code d'accès » et cliquez sur « Consulter ».</li>
+        <li><strong>Vous ne payez qu'une fois :</strong> tant que vous avez votre code, vous pouvez revenir consulter les coordonnées sans repayer.</li>
+        <li><strong>Après le rendez-vous :</strong> cliquez sur « J'ai récupéré mon document » pour clôturer la demande. Si le document ne correspond pas, ou si la déclaration vous paraît frauduleuse, cliquez sur « Signaler un problème » : notre équipe examine votre signalement.</li>
+      </ul>
+    </div>
+
+    <!-- ---------- Pourquoi des frais ---------- -->
+    <div class="carte" id="aide-frais">
+      <h2>Pourquoi payer des frais de service ?</h2>
+      <p>Chercher et déclarer un document sont <strong>gratuits</strong>. Seul le déblocage des coordonnées est payant : une commission de <span data-param="commission_deblocage">montant affiché avant le paiement</span>, payée une seule fois.</p>
+
+      <h2>À quoi sert cette commission ?</h2>
+      <div class="grille-frais">
+        <div class="bloc-frais"><h3>Faire vivre le service</h3><p>Hébergement du site, maintenance et amélioration de l'application, pour qu'elle reste disponible quand vous en avez besoin.</p></div>
+        <div class="bloc-frais"><h3>Vérifier les déclarations</h3><p>Chaque déclaration est contrôlée avant publication, pour limiter les fausses annonces et les abus.</p></div>
+        <div class="bloc-frais"><h3>Sécuriser le paiement</h3><p>Le paiement Mobile Money passe par un partenaire de paiement agréé, qui prélève des frais de transaction.</p></div>
+        <div class="bloc-frais"><h3>Protéger les coordonnées</h3><p>Un petit paiement décourage ceux qui voudraient récupérer des numéros de téléphone sans être propriétaires d'un document.</p></div>
+      </div>
+
+      <h2>Ce que la commission n'est pas</h2>
+      <ul class="liste-aide">
+        <li><strong>Ce n'est pas le prix de votre document.</strong> Un document n'est jamais « vendu » : il est rendu à son propriétaire.</li>
+        <li><strong>Ce n'est pas l'indemnité du déclarant.</strong> L'indemnité de déplacement est remise directement à la personne qui a trouvé le document, en main propre, sans passer par nous.</li>
+      </ul>
+
+      <h2>Et l'alerte payante ?</h2>
+      <p>Si votre recherche ne donne aucun résultat, le site vous propose d'activer une alerte (<span data-param="prix_alerte">tarif affiché au moment de l'activation</span>), payable par Mobile Money. Dès qu'un document correspondant est déclaré, notre équipe vous prévient par e-mail et par appel, sans que vous ayez à relancer la recherche. Ce tarif couvre ce suivi et ces notifications.</p>
+    </div>
+
+    <!-- ---------- Sécurité ---------- -->
+    <div class="carte attention" id="aide-securite">
+      <h2>Votre sécurité avant tout</h2>
+      <ul class="liste-aide">
+        <li>Donnez-vous toujours rendez-vous dans un <strong>lieu public, à la vue de tous</strong>.</li>
+        <li><strong>Ne versez jamais l'indemnité à l'avance</strong>, ni par Mobile Money : elle se remet en main propre, après avoir vérifié et récupéré votre document.</li>
+        <li>Si vous avez trouvé un document, vérifiez l'identité du propriétaire avant de le lui remettre.</li>
+        <li>Le seul paiement fait sur ce site est la commission, via la page de paiement Sebpay. Méfiez-vous de toute personne qui vous demande de payer ailleurs.</li>
+      </ul>
+    </div>
+
+    <!-- ---------- FAQ ---------- -->
+    <div class="carte" id="aide-faq">
+      <h2>Questions fréquentes</h2>
+
+      <details class="faq">
+        <summary>Je ne trouve pas mon document, que faire ?</summary>
+        <p>Vérifiez l'orthographe du nom, le type de document et essayez les villes proches. Il est aussi possible que personne ne l'ait encore déclaré : revenez plus tard ou activez une alerte pour être prévenu.</p>
+      </details>
+
+      <details class="faq">
+        <summary>Je n'ai reçu aucune notification sur mon téléphone après avoir cliqué sur « Payer »</summary>
+        <p>Sur la page Sebpay, vérifiez que vous avez bien choisi votre pays et votre opérateur, saisi votre numéro et validé. Vérifiez aussi que le solde de votre compte Mobile Money est suffisant : un solde insuffisant est la cause la plus fréquente. Si la page a expiré (30 minutes), recommencez la demande.</p>
+      </details>
+
+      <details class="faq">
+        <summary>J'ai payé mais je ne vois pas les coordonnées</summary>
+        <p>Patientez quelques instants sur la page : la confirmation du paiement peut prendre un peu de temps. <strong>Ne payez pas une deuxième fois.</strong> Si rien n'apparaît, gardez le message de confirmation de votre opérateur (montant, heure, numéro) et contactez-nous (voir la rubrique « Nous contacter » juste en dessous).</p>
+      </details>
+
+      <details class="faq">
+        <summary>Dois-je payer à chaque fois que je consulte les coordonnées ?</summary>
+        <p>Non. Le paiement est unique pour un déblocage. Gardez votre code d'accès pour les retrouver à tout moment depuis « Mes accès ».</p>
+      </details>
+
+      <details class="faq">
+        <summary>Mes coordonnées sont-elles visibles de tous si je déclare un document ?</summary>
+        <p>Non. Elles restent cachées et ne sont communiquées qu'au propriétaire du document, après son paiement. Si vous déposez le document dans un établissement public, vous pouvez aussi rester anonyme.</p>
+      </details>
+
+      <details class="faq">
+        <summary>Pourquoi dois-je masquer le numéro du document sur les photos ?</summary>
+        <p>Les photos sont visibles par tous ceux qui effectuent une recherche. Le numéro est une donnée sensible, qui pourrait servir à usurper l'identité du propriétaire. Masquez-le avec le doigt ou un papier avant de photographier.</p>
+      </details>
+    </div>
+
+    <!-- ---------- Nous contacter ---------- -->
+    <div class="carte" id="aide-contact">
+      <h2>Nous contacter</h2>
+      <p class="aide">Une question, un problème de paiement, une suggestion ? Écrivez-nous. En cas de problème de paiement, indiquez le numéro utilisé, le montant et l'heure du paiement.</p>
+      <div id="liste-contacts" class="contact-liens"></div>
+    </div>
+
+    <div class="hero-boutons">
+      <button class="gros" data-page="rechercher">J'ai perdu un document</button>
+      <button class="gros secondaire" data-page="declarer">J'ai trouvé un document</button>
+    </div>
+  </section>
+
 </main>
 
 <!-- ============ MODALE DE PAIEMENT ============ -->
@@ -156,16 +368,17 @@
     <form id="form-paiement" novalidate>
       <label for="pay-nom">Votre nom *</label>
       <input type="text" id="pay-nom" required>
-      <label for="pay-tel">Votre numéro Mobile Money *</label>
+      <label for="pay-tel">Votre numéro de téléphone *</label>
       <input type="tel" id="pay-tel" placeholder="06 000 00 00" required>
-      <label for="pay-operateur">Opérateur</label>
-      <select id="pay-operateur"><option>MTN Mobile Money</option><option>Airtel Money</option></select>
+      <p class="aide">Ce numéro permet de vous identifier. Vous choisirez votre opérateur et le numéro Mobile Money à débiter sur la page de paiement sécurisée Sebpay.</p>
       <p class="aide">En plus de cette commission, vous remettrez en main propre une indemnité de déplacement au déclarant (minimum conseillé : <span id="pay-indemnite"></span>), <strong>après avoir vérifié et récupéré votre document</strong>.</p>
       <button type="submit" id="btn-payer" class="gros">Payer</button>
     </form>
   </div>
 </div>
 
+<script src="js/demarrage.js"></script>
 <script src="js/app.js"></script>
+<script src="js/contact.js"></script>
 </body>
 </html>

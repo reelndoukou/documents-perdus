@@ -253,7 +253,7 @@ zoneResultats.addEventListener('click', (e) => {
   if (btn.dataset.action === 'signaler') signalerProbleme(btn.dataset.token, zoneResultats);
 });
 
-// ============ PAIEMENT (SIMULÉ) ============
+// ============ PAIEMENT ============
 
 const modal = document.getElementById('modal-paiement');
 
@@ -281,7 +281,7 @@ document.getElementById('form-paiement').addEventListener('submit', async (e) =>
       proprietaire_nom: nom,
       proprietaire_telephone: document.getElementById('pay-tel').value,
     });
-      // Vrai paiement : on envoie la personne sur la page MonetBil
+      // Vrai paiement : on envoie la personne sur la page de paiement Sebpay
     if (rep.payment_url) {
       memoriserEnAttente(rep.reference);
       window.location.href = rep.payment_url;
@@ -410,8 +410,13 @@ async function init() {
   try {
     const [types, params] = await Promise.all([appel('/types-document'), appel('/parametres')]);
     Object.assign(etat.prix, params);
-    etat.reel = params.mode_paiement === 'monetbil';
+    etat.reel = params.mode_paiement === 'sebpay';
     document.querySelectorAll('.bandeau-simulation').forEach((b) => { b.style.display = etat.reel ? 'none' : 'block'; });
+    // Page Aide : montants réels (commission, alerte, indemnité conseillée)
+    document.querySelectorAll('[data-param]').forEach((el) => {
+      const v = params[el.dataset.param];
+      if (Number.isFinite(v)) el.textContent = fcfa(v);
+    });
     const options = types.map((t) => `<option value="${t.id}">${echapper(t.libelle)}</option>`).join('');
     document.getElementById('decl-type').innerHTML = options;
     document.getElementById('rech-type').innerHTML = options;
@@ -422,7 +427,7 @@ async function init() {
   traiterRetourPaiement();
 }
 
-// ============ RETOUR DE PAIEMENT MONETBIL ============
+// ============ RETOUR DE PAIEMENT SEBPAY ============
 
 const CLE_ATTENTE = 'dp_attente';
 
@@ -443,10 +448,10 @@ function retirerEnAttente(ref) {
 
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// MonetBil confirme le paiement par notification : on interroge notre serveur jusqu'à la réponse
+// Sebpay confirme le paiement (webhook + vérification de session) : on interroge notre serveur jusqu'à la réponse
 async function attendrePaiement(ref, essais = 40) {
   for (let i = 0; i < essais; i++) {
-    const s = await appel(`/monetbil/statut/${encodeURIComponent(ref)}`);
+    const s = await appel(`/sebpay/statut/${encodeURIComponent(ref)}`);
     if (s.statut !== 'en_attente') return s;
     await pause(3000);
   }
@@ -494,7 +499,7 @@ async function traiterRetourPaiement() {
   for (const { ref: r, date } of lireEnAttente()) {
     if (Date.now() - date > 24 * 3600 * 1000) { retirerEnAttente(r); continue; }
     try {
-      const s = await appel(`/monetbil/statut/${encodeURIComponent(r)}`);
+      const s = await appel(`/sebpay/statut/${encodeURIComponent(r)}`);
       if (s.statut !== 'en_attente') await conclurePaiement(r, s);
     } catch { /* on réessaiera à la prochaine visite */ }
   }

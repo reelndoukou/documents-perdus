@@ -1,0 +1,22 @@
+{
+  "name": "Documents Perdus",
+  "short_name": "Docs Perdus",
+  "description": "Perdu ? Trouvé ? Retrouvons-le ensemble. Déclarez un document trouvé ou retrouvez le vôtre.",
+  "lang": "fr",
+  "dir": "ltr",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6f5",
+  "theme_color": "#0f5c4d",
+  "icons": [
+    {
+      "src": "/images/logo.png",
+      "sizes": "192x192 512x512 1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
